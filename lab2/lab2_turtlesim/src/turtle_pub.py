@@ -6,12 +6,13 @@
 # Import the rospy package. For an import to work, it must be specified
 # in both the package manifest AND the Python file in which it is used.
 import rospy
+import sys
 
 # Import the String message type from the /msg directory of the std_msgs package.
 from std_msgs.msg import String
 
 # Define the method which contains the node's main functionality
-def talker():
+def talker(turtle_name):
 
     # Create an instance of the rospy.Publisher object which we can  use to
     # publish messages to a topic. This publisher publishes messages of type
@@ -44,6 +45,9 @@ if __name__ == '__main__':
 
     # Check if the node has received a signal to shut down. If not, run the
     # talker method.
+    turtle_name = sys.argv[1]
+    print(turtle_name)
+
     try:
-        talker()
+        talker(turtle_name)
     except rospy.ROSInterruptException: pass

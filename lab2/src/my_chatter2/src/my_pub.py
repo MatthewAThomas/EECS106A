@@ -8,15 +8,40 @@
 import rospy
 
 # Import the String message type from the /msg directory of the std_msgs package.
-from std_msgs.msg import String
+from my_chatter2.msg import TimestampString
 
 # Define the method which contains the node's main functionality
-def talker():
+# def talker():
+
+#     # Create an instance of the rospy.Publisher object which we can  use to
+#     # publish messages to a topic. This publisher publishes messages of type
+#     # std_msgs/String to the topic /chatter_talk
+#     pub = rospy.Publisher('chatter_talk', String, queue_size=10)
+    
+#     # Create a timer object that will sleep long enough to result in a 10Hz
+#     # publishing rate
+#     r = rospy.Rate(10) # 10hz
+
+#     # Loop until the node is killed with Ctrl-C
+#     while not rospy.is_shutdown():
+#         # Construct a string that we want to publish (in Python, the "%"
+#         # operator functions similarly to sprintf in C or MATLAB)
+#         pub_string = "hello world %s" % (rospy.get_time())
+        
+#         # Publish our string to the 'chatter_talk' topic
+#         pub.publish(pub_string)
+#         print(rospy.get_name() + ": I sent \"%s\"" % pub_string)
+        
+#         # Use our rate object to sleep until it is time to publish again
+#         r.sleep()
+
+# Define the method which contains the node's main functionality
+def my_talker():
 
     # Create an instance of the rospy.Publisher object which we can  use to
     # publish messages to a topic. This publisher publishes messages of type
     # std_msgs/String to the topic /chatter_talk
-    pub = rospy.Publisher('chatter_talk', String, queue_size=10)
+    pub = rospy.Publisher('user_messages', TimestampString, queue_size=10)
     
     # Create a timer object that will sleep long enough to result in a 10Hz
     # publishing rate
@@ -26,14 +51,18 @@ def talker():
     while not rospy.is_shutdown():
         # Construct a string that we want to publish (in Python, the "%"
         # operator functions similarly to sprintf in C or MATLAB)
-        pub_string = "hello world %s" % (rospy.get_time())
-        
+        message = input("please enter something here<Enter>")
+        #pub_string = message + " at %s" % (rospy.get_time())
+        timestampStringObj = TimestampString(message, rospy.get_time())
+
+
         # Publish our string to the 'chatter_talk' topic
-        pub.publish(pub_string)
-        print(rospy.get_name() + ": I sent \"%s\"" % pub_string)
+        pub.publish(timestampStringObj)
+        print(rospy.get_name() + ": I sent \"%s\"" % timestampStringObj)
         
         # Use our rate object to sleep until it is time to publish again
         r.sleep()
+
             
 # This is Python's syntax for a main() method, which is run by default when
 # exectued in the shell
@@ -45,5 +74,5 @@ if __name__ == '__main__':
     # Check if the node has received a signal to shut down. If not, run the
     # talker method.
     try:
-        talker()
+        my_talker()
     except rospy.ROSInterruptException: pass

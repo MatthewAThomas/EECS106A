@@ -6,17 +6,21 @@
 # Import the rospy package. For an import to work, it must be specified
 # in both the package manifest AND the Python file in which it is used.
 import rospy
+import sys
 
 # Import the String message type from the /msg directory of the std_msgs package.
 from std_msgs.msg import String
+from geometry_msgs.msg import Twist
+
 
 # Define the method which contains the node's main functionality
-def talker():
+def talker(turtle_name):
 
     # Create an instance of the rospy.Publisher object which we can  use to
     # publish messages to a topic. This publisher publishes messages of type
     # std_msgs/String to the topic /chatter_talk
-    pub = rospy.Publisher('chatter_talk', String, queue_size=10)
+    my_topic = turtle_name + '/cmd_vel'
+    pub = rospy.Publisher(my_topic, Twist, queue_size=10)
     
     # Create a timer object that will sleep long enough to result in a 10Hz
     # publishing rate
@@ -26,11 +30,28 @@ def talker():
     while not rospy.is_shutdown():
         # Construct a string that we want to publish (in Python, the "%"
         # operator functions similarly to sprintf in C or MATLAB)
-        pub_string = "hello world %s" % (rospy.get_time())
+        # pub_string = "hello world %s" % (rospy.get_time())
+
+        twist = Twist()
+        control = input("enter random key for now:\n")
+        twist.angular.z = 0
+        if (control == 'a'):
+            twist.linear.x = -2
+            twist.linear.y = 0
+        elif(control == 's'):
+            twist.linear.x = 0
+            twist.linear.y = -2            
+        elif(control == 'd'):
+            twist.linear.x = 2
+            twist.linear.y = 0
+        elif(control == 'w'):
+            twist.linear.x = 0
+            twist.linear.y = 2
+    
         
         # Publish our string to the 'chatter_talk' topic
-        pub.publish(pub_string)
-        print(rospy.get_name() + ": I sent \"%s\"" % pub_string)
+        pub.publish(twist)
+        #print(rospy.get_name() + ". " +  twist)
         
         # Use our rate object to sleep until it is time to publish again
         r.sleep()
@@ -44,6 +65,8 @@ if __name__ == '__main__':
 
     # Check if the node has received a signal to shut down. If not, run the
     # talker method.
+    turtle_name = sys.argv[1]
+
     try:
-        talker()
+        talker(turtle_name)
     except rospy.ROSInterruptException: pass

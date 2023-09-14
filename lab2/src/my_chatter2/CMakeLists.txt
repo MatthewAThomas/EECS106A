@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(turtle_patrol)
+project(my_chatter2)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -7,12 +7,10 @@ project(turtle_patrol)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED
-    COMPONENTS 
-    message_generation 
-    std_msgs
-    geometry_msgs
-    turtlesim
+find_package(catkin REQUIRED COMPONENTS
+  rospy
+  std_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -49,17 +47,16 @@ find_package(catkin REQUIRED
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+   FILES TimestampString.msg
+)
 
 ## Generate services in the 'srv' folder
-add_service_files(FILES
-    Patrol.srv
-    MyPatrol.srv
-)
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -70,9 +67,8 @@ add_service_files(FILES
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-    DEPENDENCIES
-    std_msgs
-    geometry_msgs
+   DEPENDENCIES
+   std_msgs
 )
 
 ################################################
@@ -85,7 +81,7 @@ generate_messages(
 ##   * add a build_depend and a exec_depend tag for "dynamic_reconfigure"
 ## * In this file (CMakeLists.txt):
 ##   * add "dynamic_reconfigure" to
-##     find_package(catkin REQUIRED COMPONENTS ...)
+find_package(catkin REQUIRED COMPONENTS rospy std_msgs message_generation)
 ##   * uncomment the "generate_dynamic_reconfigure_options" section below
 ##     and list every .cfg file to be processed
 
@@ -104,10 +100,8 @@ generate_messages(
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(CATKIN_DEPENDS 
-    std_msgs 
-    geometry_msgs
-    turtlesim
+catkin_package(
+  CATKIN_DEPENDS rospy std_msgs message_runtime
 )
 
 ###########
@@ -118,12 +112,12 @@ catkin_package(CATKIN_DEPENDS
 ## Your package locations should be listed before other locations
 include_directories(
 # include
-# ${catkin_INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/turtle_patrol.cpp
+#   src/${PROJECT_NAME}/my_chatter2.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -134,7 +128,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/turtle_patrol_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/my_chatter2_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -198,7 +192,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_turtle_patrol.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_my_chatter2.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
