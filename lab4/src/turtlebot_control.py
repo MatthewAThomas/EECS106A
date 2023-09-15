@@ -41,7 +41,7 @@ def controller(turtlebot_frame, goal_frame):
   # Loop until the node is killed with Ctrl-C
   while not rospy.is_shutdown():
     try:
-      trans = tfBuffer.lookup_transform(goal_frame,turtlebot_frame, rospy.Time())
+      trans = tfBuffer.lookup_transform(goal_frame, turtlebot_frame, rospy.Time())
       print(trans)
       # Process trans to get your state error
       # Generate a control command to send to the robot
@@ -58,10 +58,13 @@ def controller(turtlebot_frame, goal_frame):
       print("offset")
       print(offset)
       res = np.matmul(temp, offset)
-      # print(res)
+      print(res)
       control_command = Twist()
       control_command.linear.x = res[0]
-      control_command.angular.x = res[1]
+      control_command.angular.z = res[1]
+
+      print("final command")
+      print(control_command)
 
       #################################### end your code ###############
 
