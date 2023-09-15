@@ -9,6 +9,7 @@
 import rospy
 import tf2_ros
 import sys
+import numpy as np
 
 from geometry_msgs.msg import Twist
 
@@ -21,11 +22,13 @@ def controller(turtlebot_frame, goal_frame):
   - turtlebot_frame: the tf frame of the AR tag on your turtlebot
   - target_frame: the tf frame of the target AR tag
   """
+  # ar_marker_8 : cherry
+  # ar_marker_0 : cube
 
   ################################### YOUR CODE HERE ##############
 
   #Create a publisher and a tf buffer, which is primed with a tf listener
-  pub = rospy.Publisher('INSTERT TOPIC HERE', Twist, queue_size=10)
+  pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
   tfBuffer = tf2_ros.Buffer()
   tfListener = tf2_ros.TransformListener(tfBuffer)
   
@@ -38,12 +41,27 @@ def controller(turtlebot_frame, goal_frame):
   # Loop until the node is killed with Ctrl-C
   while not rospy.is_shutdown():
     try:
-      trans = tfBuffer.lookup_transform(INSERT FRAME HERE, INSERT FRAME HERE, rospy.Time())
-
+      trans = tfBuffer.lookup_transform(goal_frame,turtlebot_frame, rospy.Time())
+      print(trans)
       # Process trans to get your state error
       # Generate a control command to send to the robot
 
-      control_command = # Generate this
+      temp = np.eye(2)
+      temp[0][0] = -K1
+      temp[1][1] = K2
+      offset = np.array([trans.transform.translation.x, trans.transform.translation.y])
+
+      #offset[0] = trans.transform.translation.x
+      #offset[1] = trans.transform.translation.y
+      print("temp")
+      print(temp)
+      print("offset")
+      print(offset)
+      res = np.matmul(temp, offset)
+      # print(res)
+      control_command = Twist()
+      control_command.linear.x = res[0]
+      control_command.angular.x = res[1]
 
       #################################### end your code ###############
 
