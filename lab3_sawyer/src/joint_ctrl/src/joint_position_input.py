@@ -22,11 +22,11 @@ import rospy
 
 import intera_interface
 import intera_external_devices
-
+import numpy as np
 from intera_interface import CHECK_VERSION
 
 
-def map_input(side):
+def map_keyboard(side):
     limb = intera_interface.Limb(side)
 
     try:
@@ -79,31 +79,59 @@ def map_input(side):
         })
     done = False
     print("Controlling joints. Press ? for help, Esc to quit.")
+
+    r = rospy.Rate(10)
     while not done and not rospy.is_shutdown():
+        # c = intera_external_devices.getch()
+        input_string = input('Enter right elements of a list separated by space \n')
+        user_angle = input_string.split()
+
+        if len(user_angle) != 7:
+            continue 
+
+        # convert each item to int type
+        for i in range(len(user_angle)):
+            # convert each item to int type
+            user_angle[i] = int(user_angle[i])
+
+        print('User angle: ', user_angle)
+
+        my_dict = {'right_j0':user_angle[0], 'right_j1':user_angle[1], 'right_j2':user_angle[2], 'right_j3':user_angle[3],'right_j4':user_angle[4],'right_j5':user_angle[5],'right_j6':user_angle[6]}
+        #my_dict = {'left_s0':user_angle[0]}
+        print(my_dict)
+        while True:
+            curr_angles = [limb.joint_angle(x) for x in my_dict.keys()]
+            norm_diff = np.linalg.norm(np.array(curr_angles) - np.array(user_angle))
+            print(norm_diff)
+            if norm_diff < 0.5:
+                break
+            limb.set_joint_position_speed(.3)        
+            limb.set_joint_positions(my_dict)
+            r.sleep()
         
-        #c = intera_external_devices.getch()
-        c = input("please enter something")
-        if c:
-            #catch Esc or ctrl-c
-            if c in ['\x1b', '\x03']:
-                done = True
-                rospy.signal_shutdown("Example finished.")
-            elif c in bindings:
-                cmd = bindings[c]
-                if c == '8' or c == 'i' or c == '9':
-                    cmd[0](cmd[1])
-                    print("command: %s" % (cmd[2],))
-                else:
-                    #expand binding to something like "set_j(right, 'j0', 0.1)"
-                    cmd[0](*cmd[1])
-                    print("command: %s" % (cmd[2],))
-            else:
-                print("key bindings: ")
-                print("  Esc: Quit")
-                print("  ?: Help")
-                for key, val in sorted(list(bindings.items()),
-                                       key=lambda x: x[1][2]):
-                    print("  %s: %s" % (key, val[2]))
+        # for i in range(user_angle):
+
+        # if c:
+        #     #catch Esc or ctrl-c
+        #     if c in ['\x1b', '\x03']:
+        #         done = True
+        #         rospy.signal_shutdown("Example finished.")
+        #     elif c in bindings:
+        #         cmd = bindings[c]
+        #         if c == '8' or c == 'i' or c == '9':
+        #             cmd[0](cmd[1])
+        #             print("command: %s" % (cmd[2],))
+        #         else:
+        #             #expand binding to something like "set_j(right, 'j0', 0.1)"
+        #             cmd[0](*cmd[1])
+        #             print("command: %s" % (cmd[2],))
+        #     else:
+        #         print("key bindings: ")
+        #         print("  Esc: Quit")
+        #         print("  ?: Help")
+        #         for key, val in sorted(list(bindings.items()),
+        #                                key=lambda x: x[1][2]):
+        #             print("  %s: %s" % (key, val[2]))
 
 def main():
     """RSDK Joint Position Example: Keyboard Control
@@ -124,7 +152,6 @@ See help inside the example with the '?' key for key bindings.
                         "Exiting."), "ERROR")
         return
 
-       
     arg_fmt = argparse.RawDescriptionHelpFormatter
     parser = argparse.ArgumentParser(formatter_class=arg_fmt,
                                      description=main.__doc__,
@@ -135,7 +162,6 @@ See help inside the example with the '?' key for key bindings.
         help="Limb on which to run the joint position keyboard example"
     )
     args = parser.parse_args(rospy.myargv()[1:])
-    
 
     print("Initializing node... ")
     rospy.init_node("sdk_joint_position_keyboard")
@@ -150,7 +176,7 @@ See help inside the example with the '?' key for key bindings.
 
     rospy.loginfo("Enabling robot...")
     rs.enable()
-    map_input(args.limb)
+    map_keyboard(args.limb)
     print("Done.")
 
 
