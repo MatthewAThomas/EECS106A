@@ -29,9 +29,12 @@ def controller(waypoint):
   ################################### YOUR CODE HERE ##############
 
   #Create a publisher and a tf buffer, which is primed with a tf listener
-  pub = ## TODO: what topic should we publish to? how?
-  tfBuffer = ## TODO: initialize a buffer
-  tfListener = ## TODO: initialize a tf listener
+  pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10) #: what topic should we publish to? how?
+  tfBuffer = tf2_ros.Buffer()
+  tfListener = tf2_ros.TransformListener(tfBuffer)
+
+  # tfBuffer = ## TODO: initialize a buffer
+  # tfListener = ## TODO: initialize a tf listener
   
   # Create a timer object that will sleep long enough to result in
   # a 10Hz publishing rate
@@ -39,14 +42,18 @@ def controller(waypoint):
   # you can also use the rate to calculate your dt, but you don't have to
 
   # All in the form [x, y]
-  Kp = np.diag([2, 0.8]) ## TODO: You may need to tune these values for your turtlebot
+  # Kp = np.diag([2, 0.8]) ## TODO: You may need to tune these values for your turtlebot
+  # Kd = np.diag([-0.5, 0.5]) ## TODO: You may need to tune these values for your turtlebot
+  # Ki = np.diag([-0.1, 0.1]) ## TODO: You may need to tune these values for your turtlebot
+
+  Kp = np.diag([0.3, 1]) ## TODO: You may need to tune these values for your turtlebot
   Kd = np.diag([-0.5, 0.5]) ## TODO: You may need to tune these values for your turtlebot
   Ki = np.diag([-0.1, 0.1]) ## TODO: You may need to tune these values for your turtlebot
 
-  prev_time = ## TODO: initialize your time, what rospy function would be helpful here?
-  integ = ## TODO: initialize an empty np array -- make sure to keep your sizes consistent
-  derivative = ## TODO: initialize an empty np array 
-  previous_error = ## TODO: initialize an empty np array 
+  prev_time = 0## TODO: initialize your time, what rospy function would be helpful here?
+  integ = 0## TODO: initialize an empty np array -- make sure to keep your sizes consistent
+  derivative = 0## TODO: initialize an empty np array 
+  previous_error = 0## TODO: initialize an empty np array 
 
   # Loop until the node is killed with Ctrl-C
   while not rospy.is_shutdown():

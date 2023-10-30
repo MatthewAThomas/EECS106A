@@ -44,16 +44,21 @@ class ObjectDetector:
 
     def camera_info_callback(self, msg):
         # TODO: Extract the intrinsic parameters from the CameraInfo message
-        self.fx = ...
-        self.fy = ...
-        self.cx = ...
-        self.cy = ...
+        # print(msg)
+        # print(msg.K[0])
+        # print(msg.K[4])
+        # print(msg.K[2])
+        # print(msg.K[5])
+        self.fx = msg.K[0]
+        self.fy = msg.K[4]
+        self.cx = msg.K[2]
+        self.cy = msg.K[5]
 
     def pixel_to_point(self, u, v, depth):
         # TODO: Use the camera intrinsics to convert pixel coordinates to real-world coordinates
-        X = ...
-        Y = ...
-        Z = ...
+        X = (u - self.cx)* depth / self.fx
+        Y = (v - self.cy)* depth / self.fy
+        Z = depth
         return X, Y, Z
 
     def color_image_callback(self, msg):
@@ -87,8 +92,11 @@ class ObjectDetector:
 
         # TODO: Define range for cup color in RGB
         # NOTE: You can visualize how this is performing by viewing the result of the segmentation in rviz
-        lower_rgb = np.array(...)
-        upper_rgb = np.array(...)
+        # lower_rgb = np.array([140, 39, 36])
+        # upper_rgb = np.array([217, 60, 56])
+
+        lower_rgb = np.array([50, 50, 50])
+        upper_rgb = np.array([170, 0, 255])
 
         # Convert RGB thresholds to HSV
         lower_hsv = self.rgb_to_hsv(lower_rgb)
@@ -96,11 +104,22 @@ class ObjectDetector:
 
         # TODO: Threshold the image to get only cup colors
         # HINT: Lookup cv2.inRange() or np.where()
-        mask = ...
+        # print("lower")
+        # print(lower_hsv)
+        # print("upper")
+        # print(upper_hsv)
+        # print("hsv")
+        # print(hsv)
+        # mask = cv2.inRange(hsv, lower_hsv, upper_hsv)
+        mask = cv2.inRange(hsv, lower_hsv, upper_hsv)
+        # mask = cv2.inRange(hsv, lower_hsv, np.array([135, 127, 95]))
+        # print(mask)
 
         # TODO: Get the coordinates of the cup points on the mask
         # HINT: Lookup np.where() or np.nonzero()
-        y_coords, x_coords = ...
+        y_coords, x_coords = np.where(mask == 255)
+        # print(y_coords)
+        # print(x_coords)
 
         # If there are no detected points, exit
         if len(x_coords) == 0 or len(y_coords) == 0:
